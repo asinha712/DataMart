@@ -33,10 +33,6 @@ s3_conf:
   staging_area: staging_pg
 
 
-mongodb_config:
-  database: school
-  collection: students
-
 redshift_conf:
   filetype: csv
   delimiter: |
