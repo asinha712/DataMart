@@ -3,7 +3,7 @@ def read_from_mysql(spark,app_secret,app_conf):
     jdbcParams = {"url": get_mysql_jdbc_url(app_secret),
                   "lowerBound": "1",
                   "upperBound": "100",
-                  "dbtable": app_conf["sb"]["mysql_conf"]["dbtable"],
+                  "dbtable": app_conf["SB"]["mysql_conf"]["dbtable"],
                   "numPartitions": "2",
                   "partitionColumn": app_conf["sb"]["mysql_conf"]["partition_column"],
                   "user": app_secret["mysql_conf"]["username"],
