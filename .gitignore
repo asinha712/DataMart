@@ -97,7 +97,7 @@ __pypackages__/
 # Celery stuff
 celerybeat-schedule
 celerybeat.pid
-
+.secrets
 # SageMath parsed files
 *.sage.py
 
@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+*.DS_Store
+.secrets
+*.pem
+*.ppk
