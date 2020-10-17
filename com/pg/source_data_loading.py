@@ -63,8 +63,8 @@ if __name__ == '__main__':
             cust = spark \
                 .read \
                 .format("com.mongodb.spark.sql.DefaultSource") \
-                .option("database", app_conf["mongodb_config"]["database"]) \
-                .option("collection", app_conf["mongodb_config"]["collection"]) \
+                .option("database", app_conf["CUST_ADDR"]["mongodb_config"]["database"]) \
+                .option("collection", app_conf["CUST_ADDR"]["mongodb_config"]["collection"]) \
                 .load()
 
             cust.show()
