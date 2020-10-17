@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
             sb_df.show()
             sb_df.write\
-                .partitonBy('ins_dt')\
+                .partitionBy('ins_dt')\
                 .mode("append")\
                 .parquet("s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_area"] + "/" + src)
         elif src == 'OL':
