@@ -22,7 +22,10 @@ OL:
     s3_bucket: asinha
     filename: KC_Extract_1_20171009.csv
 
-
+CUST_ADDR:
+  mongodb_config:
+    database: cust
+    collection: cust
 
 
 s3_conf:

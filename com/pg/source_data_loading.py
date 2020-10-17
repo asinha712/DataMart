@@ -11,13 +11,7 @@ if __name__ == '__main__':
         '--packages "mysql:mysql-connector-java:8.0.15" pyspark-shell'
     )
 
-    # Create the SparkSession
-    spark = SparkSession \
-        .builder \
-        .appName("Read ingestion enterprise applications") \
-        .master('local[*]') \
-        .getOrCreate()
-    spark.sparkContext.setLogLevel('ERROR')
+
 
     current_dir = os.path.abspath(os.path.dirname(__file__))
     app_config_path = os.path.abspath(current_dir + "/../../" + "application.yml")
@@ -27,6 +21,15 @@ if __name__ == '__main__':
     app_conf = yaml.load(conf, Loader=yaml.FullLoader)
     secret = open(app_secrets_path)
     app_secret = yaml.load(secret, Loader=yaml.FullLoader)
+
+    # Create the SparkSession
+    spark = SparkSession \
+        .builder \
+        .appName("Read ingestion enterprise applications") \
+        .master('local[*]') \
+        .config("spark.mongodb.input.uri", app_secret["mongodb_config"]["uri"]) \
+        .getOrCreate()
+    spark.sparkContext.setLogLevel('ERROR')
 
     src_list = app_conf["source_list"]
     for src in src_list:
@@ -56,7 +59,15 @@ if __name__ == '__main__':
             cp_df.show()
             cp_df = cp_df.withColumn("ins_dt", f.current_date())
             cp_df.write.mode('append').partitionBy("ins_dt").parquet("s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_area"] + "/" + src)
+        elif src == 'CUST_ADDR':
+            cust = spark \
+                .read \
+                .format("com.mongodb.spark.sql.DefaultSource") \
+                .option("database", app_conf["mongodb_config"]["database"]) \
+                .option("collection", app_conf["mongodb_config"]["collection"]) \
+                .load()
 
+            cust.show()
 
         else:
             cust = utils.read_from_mongodb(spark, app_secret,app_conf)
