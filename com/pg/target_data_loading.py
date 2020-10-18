@@ -44,3 +44,6 @@ if __name__ == '__main__':
                 .parquet("s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/staging_pg/"+src_conf["source_data"]) \
                 .repartition(5)
             one_cp_df.show()
+
+            one_cp_df.createOrReplaceTempView("one_cp_dp_view")
+            spark.sql("""select * from one_cp_dp_view""").show()
