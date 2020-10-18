@@ -4,6 +4,7 @@ import os.path
 import com.pg.utils.utility as utils
 import pyspark.sql.functions as f
 from pyspark.sql.types import StringType
+import utils.utility as ut
 
 if __name__ == '__main__':
 
@@ -35,11 +36,6 @@ if __name__ == '__main__':
     hadoop_conf.set("fs.s3a.access.key", app_secret["s3_conf"]["access_key"])
     hadoop_conf.set("fs.s3a.secret.key", app_secret["s3_conf"]["secret_access_key"])
 
-    #def fn_uuid():
-    #    return java.util.UUID.randomUUID().toString()
-
-
-    #spark.udf.regester("fn_uuid", fn_uuid, StringType())
 
     tgt_list = app_conf["target_list"]
     for src in tgt_list:
@@ -51,4 +47,15 @@ if __name__ == '__main__':
             one_cp_df.show()
 
             one_cp_df.createOrReplaceTempView("staging_STG_1CP")
-            spark.sql(src_conf["loading_query"]).show()
+            red_df = spark.sql(src_conf["loading_query"])
+            jdbcUrl = ut.get_redshift_jdbc_url(app_secret)
+            print(jdbcUrl)
+
+            red_df.coalesce(1).write \
+                .format("io.github.spark_redshift_community.spark.redshift") \
+                .option("url", jdbcUrl) \
+                .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
+                .option("forward_spark_s3_credentials", "true") \
+                .option("dbtable", "DATAMART.REGIS_DIM") \
+                .mode("overwrite") \
+                .save()
