@@ -3,7 +3,7 @@ import yaml
 import os.path
 import com.pg.utils.utility as utils
 import pyspark.sql.functions as f
-
+from pyspark.sql.types import StringType
 
 if __name__ == '__main__':
 
@@ -22,7 +22,6 @@ if __name__ == '__main__':
     secret = open(app_secrets_path)
     app_secret = yaml.load(secret, Loader=yaml.FullLoader)
 
-
     # Create the SparkSession
     spark = SparkSession \
         .builder \
@@ -36,6 +35,12 @@ if __name__ == '__main__':
     hadoop_conf.set("fs.s3a.access.key", app_secret["s3_conf"]["access_key"])
     hadoop_conf.set("fs.s3a.secret.key", app_secret["s3_conf"]["secret_access_key"])
 
+    #def fn_uuid():
+    #    return java.util.UUID.randomUUID().toString()
+
+
+    #spark.udf.regester("fn_uuid", fn_uuid, StringType())
+
     tgt_list = app_conf["target_list"]
     for src in tgt_list:
         src_conf = app_conf[src]
@@ -46,4 +51,4 @@ if __name__ == '__main__':
             one_cp_df.show()
 
             one_cp_df.createOrReplaceTempView("one_cp_dp_view")
-            spark.sql("""select * from one_cp_dp_view""").show()
+            spark.sql(src_conf["loading_query"]).show()
