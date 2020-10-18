@@ -50,5 +50,5 @@ if __name__ == '__main__':
                 .repartition(5)
             one_cp_df.show()
 
-            one_cp_df.createOrReplaceTempView("one_cp_dp_view")
+            one_cp_df.createOrReplaceTempView("staging_STG_1CP")
             spark.sql(src_conf["loading_query"]).show()
